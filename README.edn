@@ -1,4 +1,5 @@
 {:schema "etzhayyim.repository/v1"
- :name "com-etzhayyim-app-gyotaku"
+ :name "app-gyotaku"
  :kind :app
- :canonical-metadata :edn}
+ :canonical-metadata :edn
+ :boundary {:role :time-series-web-archive-application}}
