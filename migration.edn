@@ -1,4 +1,4 @@
 {:schema "etzhayyim.migration/v1"
  :source {:repository "etzhayyim/root" :revision "6fd297f38fe1b547e1d4c15ead9941c6ebaa3b31" :path "60-apps/etzhayyim-project-gyotaku" :tree "6cd68deb19e408078f85da1a7ea4ba819dc2f923" :tracked-files 16 :bytes 10958}
- :destination {:repository "etzhayyim/com-etzhayyim-app-gyotaku"}
+ :destination {:repository "cloud-itonami/app-gyotaku"}
  :identity {:allowed-additions ["README.edn" "migration.edn"]}}
