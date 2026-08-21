@@ -85,7 +85,7 @@ exactly the ambiguity this ADR removes.
 
 Executed on Node v26.3.0 / npm 11.16.0:
 
-- `npm install` → `added 118 packages` (previously: `ERESOLVE` failure)
+- `npm install` → `added 119 packages` from a fresh clone of `main` (previously: `ERESOLVE` failure)
 - `npm run build` → 110 modules transformed, `dist/` emitted
 - `npm run check` → `112 FILES 0 ERRORS 0 WARNINGS`, exit 0 (previously: exit 1)
 - `npm run preview` → `HTTP 200` on `/` and on the hashed JS asset
