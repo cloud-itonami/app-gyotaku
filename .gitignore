@@ -1,0 +1,4 @@
+# Build + dependency output for appview/*/svelte.
+# Neither existed before 2026-08-21 because `npm install` failed (ADR-0001).
+node_modules/
+dist/
