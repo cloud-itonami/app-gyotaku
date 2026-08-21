@@ -1,30 +1,71 @@
-# etzhayyim-project-gyotaku
+# app-gyotaku
 
-`etzhayyim-project-gyotaku` は、`etzhayyim-project-www-crawler` と連携して Web ページを時系列で保存・表示するアーカイブプロジェクトです。
+Time-series web archive ("魚拓") for pages crawled elsewhere in the etzhayyim
+fleet — intended to let a reader pick a URL and walk back through its captures.
 
-## 目的
+**Status: descriptors + frontend scaffold. The archive runtime is not in this
+repository.** Read [What is actually here](#what-is-actually-here) before
+planning work against it.
 
-- crawler の結果を継続的に収集し、URL ごとに時系列スナップショットを保存
-- Wayback Machine 風に、過去時点のページ内容を参照・比較できる基盤を提供
-- Common Crawl の CDX/Range 取得を使って過去アーカイブを取り込む
-- crawler 取得時は kotodama WIT 側の `text_content` を優先して保存し、本文の参照はテキスト魚拓として提供
+Start with **[`docs/operator-quickstart.md`](docs/operator-quickstart.md)** —
+it builds the frontend from a clean clone in five commands, all verified.
 
-## 実装方針
+## What is actually here
 
-- App component として `wasm/gyotaku-mcp-component` を運用
-- スナップショットは `kotodama WIT` の `gyotaku_snapshots` Arrow table へ保存
-- MCP tools + REST endpoint で保存・検索・表示を提供
-- `/archive/view/{id}` はテキスト本文のみ返却（本文未取得時は 404）
+18 tracked files. Measured, not asserted:
 
-## 表示の方針
+| Path | What it is | State |
+|---|---|---|
+| `appview/etzhayyim-wasm-gyotaku-i3zinrs2/svelte/` | Svelte 5 + Vite 6 + TypeScript frontend | **builds and serves**; `App.svelte` is a placeholder page |
+| `appview/*/kotodama.jsonld` | two component descriptors (`gyotaku`, `gyotaku-mcp-component`) | parse; both point at a `component.wasm` that is not tracked |
+| `PROJECT.jsonld` | project/route descriptor | parses; declares a Go gRPC component |
+| `README.edn`, `migration.edn` | repository + migration metadata | parse |
+| `CLAUDE.md` | intended XRPC command surface | design note only |
 
-- `gyotaku` では HTML 再生成は行わず、`TextContent`（および同一 URL/Result を紐づけられる場合の kotodama WIT `text_content`）を優先して表示
-- `capture_from_crawler` の既定は本文再取得を行わず、クローラ保存データの kotodama WIT 本文を使う
+This repository was migrated from `etzhayyim/root`
+(`60-apps/etzhayyim-project-gyotaku`, 16 files / 10,958 bytes) plus the two
+metadata files `migration.edn` permits. The migration was complete; the runtime
+simply never lived at that path.
 
-## CDN で公開する手順
+## What is declared but not implemented
 
-1. CDN 側の WADM で `CDN_PULUMI_SITES` に `gyotaku` を含める（`cdn.wadm.yaml` と `cdn-test.wadm.yaml` 反映済み）
-2. `gyotaku` 側の Gateway 公開ルート（`PROJECT.jsonld`）に `gyotaku.etzhayyim.com` の `/xrpc` を追加済み
-3. 既存デプロイ済み環境では `cdn.import_sites` を叩いて KV レジストリを更新
-   - `tools/call` の `subdomains` を省略すると設定 `CDN_PULUMI_SITES` から `gyotaku` を読込
-4. 以降、`https://gyotaku.etzhayyim.com/xrpc` から XRPC 経由で `get_snapshot / archive` 系 API を利用
+These are **intent**, recorded so the gap is legible. None of them is backed by
+code in this tree:
+
+- **Archive runtime** — `component.wasm` is referenced by both
+  `kotodama.jsonld` files. No `.wasm` is tracked (0 files).
+- **Go gRPC service** — `PROJECT.jsonld` declares `"stack": "go"` with routes at
+  `/api/grpc`. No `.go` is tracked (0 files).
+- **XRPC command surface** — `CLAUDE.md` specifies five commands
+  (`searchSnapshots`, `listDomains`, `getSnapshot`, `getTimeline`, `getStats`)
+  under `com.etzhayyim.apps.gyotaku.*`. No handler source exists.
+- **Ingest** — Common Crawl CDX/Range retrieval and crawler hand-off, with
+  snapshots stored in the kotodama WIT `gyotaku_snapshots` Arrow table.
+- **Archive UI** — URL search, domain browse, timeline, snapshot detail
+  (WET text / WAT metadata / WebP screenshot). The frontend currently renders a
+  scaffold heading.
+
+Note the declarations disagree with each other about transport (`/xrpc` vs
+`/api/grpc`) and stack (Go vs WASM component). Reconcile them before building;
+do not treat any single file as authoritative. Background: [ADR-0001](docs/adr/0001-repairing-the-frontend-build-and-separating-declared-from-present.md).
+
+## Frontend
+
+```bash
+cd appview/etzhayyim-wasm-gyotaku-i3zinrs2/svelte
+npm install && npm run build     # -> dist/, the staticDir kotodama.jsonld expects
+npm run check                    # svelte-check, 0 errors
+npm run preview                  # serves dist/ over HTTP
+```
+
+Tailwind is configured but no CSS entrypoint is imported, so utility classes do
+not reach the bundle. Add a CSS entry before relying on it.
+
+## Serving
+
+`appview/etzhayyim-wasm-gyotaku-i3zinrs2/kotodama.jsonld` declares an HTTP
+trigger on `0.0.0.0:8080` in SPA mode with `staticDir` `/wasm/svelte/dist`, and
+subscribes to `com.etzhayyim.apps.site.{wet,wat,screenshot,domain}` — i.e. the
+archive is meant to read what `site.etzhayyim.com` already crawled rather than
+crawl anything itself. The host that consumes this descriptor is outside this
+repository.
