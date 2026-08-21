@@ -41,7 +41,8 @@ cd appview/etzhayyim-wasm-gyotaku-i3zinrs2/svelte
 npm install
 ```
 
-Expected: `added 118 packages`.
+Expected: `added 119 packages` (from a fresh clone, resolved against the
+committed `package-lock.json`).
 
 ## 4. Build
 
