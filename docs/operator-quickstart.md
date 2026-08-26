@@ -14,11 +14,15 @@ instead of omitting it.
 
 ## Prerequisites
 
-- Node.js 20+ and npm 10+ — verified on **Node v26.3.0 / npm 11.16.0**
+- Node.js 20+ and npm 10+
+- Clojure CLI (`clojure`) — only needed if you want to regenerate
+  `public/index.html`, not for the ordinary build/test cycle below
 - Git
 
-No credentials, no network services, and no `.env` are required. The build is
-fully local after `npm install`.
+No credentials and no `.env` are required. The build needs network access once
+(to resolve `deps.edn`/npm dependencies, including the `jp-go-dds` git
+dependency and the `react`/`react-dom` npm packages reagent needs); after that
+it is fully local.
 
 ## 1. Clone
 
@@ -32,7 +36,7 @@ cd app-gyotaku
 The frontend is not at the repository root:
 
 ```bash
-cd appview/etzhayyim-wasm-gyotaku-i3zinrs2/svelte
+cd appview/etzhayyim-wasm-gyotaku-i3zinrs2/cljs
 ```
 
 ## 3. Install
@@ -41,47 +45,35 @@ cd appview/etzhayyim-wasm-gyotaku-i3zinrs2/svelte
 npm install
 ```
 
-Expected: `added 119 packages` (from a fresh clone, resolved against the
-committed `package-lock.json`).
-
 ## 4. Build
 
 ```bash
-npm run build
+npx shadow-cljs compile app
 ```
 
-Expected — a production bundle in `dist/`:
+Expected — a compiled bundle in `public/js/`, served alongside the committed
+`public/index.html`. See the migration commit message for the verbatim
+recorded output of this exact command.
 
-```
-vite v6.4.3 building for production...
-✓ 110 modules transformed.
-dist/index.html                  0.42 kB │ gzip:  0.28 kB
-dist/assets/index-C-zwCK5o.css   0.24 kB │ gzip:  0.21 kB
-dist/assets/index-z-6MKmrn.js   28.38 kB │ gzip: 10.92 kB
-✓ built in 755ms
-```
-
-`dist/` is what `kotodama.jsonld` declares as `triggers.http.staticDir`
-(`/wasm/svelte/dist`).
-
-## 5. Type-check
+## 5. Test
 
 ```bash
-npm run check
+npx shadow-cljs compile test && node out/tests.js
 ```
 
-Expected: `COMPLETED 112 FILES 0 ERRORS 0 WARNINGS`, exit code 0.
+Expected: 4 `cljs.test` assertions pass, covering the `:initialize-db`
+`reg-event-db` handler and the `:page/heading` / `:page/description`
+`reg-sub` subscriptions in `src/gyotaku/app.cljs`. See the migration commit
+message for the verbatim recorded output.
 
 ## 6. Serve the built bundle
 
-```bash
-npm run preview -- --port 4319
-curl -s -o /dev/null -w '%{http_code}\n' http://localhost:4319/
-```
-
-Expected: `200`, serving `dist/index.html` with the hashed JS/CSS assets
-injected. The page renders the scaffold heading
-`etzhayyim-wasm-gyotaku-i3zinrs2` — **not** an archive UI (see §8).
+`public/index.html` + `public/js/` is a static bundle; serve `public/` with any
+static file server (there is no `npm run preview` here — shadow-cljs's own dev
+server is for the `watch` workflow, not for smoke-testing a release build) and
+confirm `/` returns the page with `<div id="app">` populated by the mounted
+reagent view — the heading `etzhayyim-wasm-gyotaku-i3zinrs2` — **not** an
+archive UI (see §8).
 
 ## 7. Validate the descriptors
 
@@ -101,7 +93,7 @@ All three parse. `README.edn` and `migration.edn` likewise read as EDN.
 
 ## 8. What you cannot do from this repository
 
-Verified absent from the tracked tree (18 files total):
+Verified absent from the tracked tree:
 
 | Declared by | Declares | In tree |
 |---|---|---|
@@ -111,23 +103,14 @@ Verified absent from the tracked tree (18 files total):
 | `README.md` (pre-2026-08-21) | Common Crawl ingest, snapshot storage | no ingest source |
 
 So there is no server to start, no snapshot to fetch, and no endpoint to call.
-`src/App.svelte` is a placeholder that says so in its own body text
-(*"Vite entry scaffold after SvelteKit cleanup"*).
+`src/gyotaku/app.cljs`'s `app` view is a placeholder — it renders the same
+heading + one paragraph the old `App.svelte` scaffold did (now sourced from
+re-frame `app-db` instead of hard-coded markup), nothing more.
 
-Tailwind is configured (`tailwind.config.js`, `postcss.config.js`) but **no CSS
-entrypoint is imported**, so no utility classes reach the bundle — the built CSS
-contains only App.svelte's scoped rules. Wire a CSS entry before relying on
-Tailwind.
+## 9. Background
 
-## 9. If `npm install` fails
-
-It did, before 2026-08-21. Two dependency defects were fixed together
-(ADR-0001); if you are on an older commit you will see:
-
-```
-npm error peer vite@"^5.0.0" from @sveltejs/vite-plugin-svelte@4.0.4
-```
-
-Fix: `@sveltejs/vite-plugin-svelte` must be `^5` to accept the pinned Vite 6,
-and the unreferenced `@sveltejs/adapter-static` (a SvelteKit leftover that pulls
-`@sveltejs/kit`) must be removed.
+The frontend was Svelte 5 + Vite 6 + TypeScript through ADR-0001 (which repaired
+its build). ADR-0002 replaced it with ClojureScript + shadow-cljs + reagent +
+re-frame + jp-go-dds, this workspace's standard frontend stack — see
+[ADR-0002](adr/0002-migrate-frontend-from-svelte-to-clojurescript.md) for why
+and what changed.
