@@ -1,4 +1,8 @@
-# Build + dependency output for appview/*/svelte.
-# Neither existed before 2026-08-21 because `npm install` failed (ADR-0001).
+# Build + dependency output for appview/*/cljs (shadow-cljs). Also covers the
+# now-removed appview/*/svelte (Vite) tree the ADRs below reference.
 node_modules/
 dist/
+.shadow-cljs/
+.cpcache/
+public/js/
+out/

@@ -12,11 +12,11 @@ it builds the frontend from a clean clone in five commands, all verified.
 
 ## What is actually here
 
-18 tracked files. Measured, not asserted:
+20 tracked files. Measured, not asserted:
 
 | Path | What it is | State |
 |---|---|---|
-| `appview/etzhayyim-wasm-gyotaku-i3zinrs2/svelte/` | Svelte 5 + Vite 6 + TypeScript frontend | **builds and serves**; `App.svelte` is a placeholder page |
+| `appview/etzhayyim-wasm-gyotaku-i3zinrs2/cljs/` | ClojureScript (shadow-cljs) + reagent + re-frame + jp-go-dds frontend | **builds and serves**; the view is a placeholder page |
 | `appview/*/kotodama.jsonld` | two component descriptors (`gyotaku`, `gyotaku-mcp-component`) | parse; both point at a `component.wasm` that is not tracked |
 | `PROJECT.jsonld` | project/route descriptor | parses; declares a Go gRPC component |
 | `README.edn`, `migration.edn` | repository + migration metadata | parse |
@@ -52,19 +52,24 @@ do not treat any single file as authoritative. Background: [ADR-0001](docs/adr/0
 ## Frontend
 
 ```bash
-cd appview/etzhayyim-wasm-gyotaku-i3zinrs2/svelte
-npm install && npm run build     # -> dist/, the staticDir kotodama.jsonld expects
-npm run check                    # svelte-check, 0 errors
-npm run preview                  # serves dist/ over HTTP
+cd appview/etzhayyim-wasm-gyotaku-i3zinrs2/cljs
+npm install
+npx shadow-cljs compile app      # -> public/js/, served alongside public/index.html
+npx shadow-cljs compile test && node out/tests.js   # cljs.test over the re-frame event/sub logic
 ```
 
-Tailwind is configured but no CSS entrypoint is imported, so utility classes do
-not reach the bundle. Add a CSS entry before relying on it.
+ClojureScript (shadow-cljs) + reagent 1.2.0 + re-frame 1.4.3, rendered with
+`jp-go-dds.core` (デジタル庁デザインシステム) hiccup — this workspace's base
+design system. `public/index.html`'s inlined CSS was produced once via
+`jp-go-dds.page/->page`; see the docstring at the top of
+`src/gyotaku/app.cljs` for how to regenerate it. Migrated from the previous
+Svelte 5 + Vite 6 frontend (`appview/etzhayyim-wasm-gyotaku-i3zinrs2/svelte`,
+removed) — see [ADR-0002](docs/adr/0002-migrate-frontend-from-svelte-to-clojurescript.md).
 
 ## Serving
 
 `appview/etzhayyim-wasm-gyotaku-i3zinrs2/kotodama.jsonld` declares an HTTP
-trigger on `0.0.0.0:8080` in SPA mode with `staticDir` `/wasm/svelte/dist`, and
+trigger on `0.0.0.0:8080` in SPA mode with `staticDir` `/wasm/cljs/public`, and
 subscribes to `com.etzhayyim.apps.site.{wet,wat,screenshot,domain}` — i.e. the
 archive is meant to read what `site.etzhayyim.com` already crawled rather than
 crawl anything itself. The host that consumes this descriptor is outside this
