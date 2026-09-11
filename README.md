@@ -54,8 +54,8 @@ do not treat any single file as authoritative. Background: [ADR-0001](docs/adr/0
 ```bash
 cd appview/etzhayyim-wasm-gyotaku-i3zinrs2/cljs
 npm install
-npx shadow-cljs compile app      # -> public/js/, served alongside public/index.html
-npx shadow-cljs compile test && node out/tests.js   # cljs.test over the re-frame event/sub logic
+amu compile --target wasm32-browser app      # -> public/js/, served alongside public/index.html
+amu compile --target wasm32-browser test && node out/tests.js   # cljs.test over the re-frame event/sub logic
 ```
 
 ClojureScript (shadow-cljs) + reagent 1.2.0 + re-frame 1.4.3, rendered with

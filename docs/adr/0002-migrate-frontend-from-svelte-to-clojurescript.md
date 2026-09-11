@@ -78,7 +78,7 @@ ADR-0001 warned against.
 Executed from `appview/etzhayyim-wasm-gyotaku-i3zinrs2/cljs` on this machine
 (Node/npm as reported by the commands below):
 
-- `npx shadow-cljs compile app` — see commit message for verbatim output.
-- `npx shadow-cljs compile test && node out/tests.js` — see commit message for
+- `amu compile --target wasm32-browser app` — see commit message for verbatim output.
+- `amu compile --target wasm32-browser test && node out/tests.js` — see commit message for
   verbatim output (4 `cljs.test` assertions over the `:initialize-db` event and
   the `:page/heading`/`:page/description` subs).
