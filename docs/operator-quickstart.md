@@ -48,7 +48,7 @@ npm install
 ## 4. Build
 
 ```bash
-npx shadow-cljs compile app
+amu compile --target wasm32-browser app
 ```
 
 Expected — a compiled bundle in `public/js/`, served alongside the committed
@@ -58,7 +58,7 @@ recorded output of this exact command.
 ## 5. Test
 
 ```bash
-npx shadow-cljs compile test && node out/tests.js
+amu compile --target wasm32-browser test && node out/tests.js
 ```
 
 Expected: 4 `cljs.test` assertions pass, covering the `:initialize-db`
