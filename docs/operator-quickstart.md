@@ -99,7 +99,7 @@ Verified absent from the tracked tree:
 |---|---|---|
 | both `kotodama.jsonld` | `component.wasm` | **absent** — 0 `.wasm` files tracked |
 | `PROJECT.jsonld` | `"stack": "go"`, `/api/grpc` | **absent** — 0 `.go` files tracked |
-| `CLAUDE.md` | 5 XRPC commands, `com.etzhayyim.apps.gyotaku.*` | no handler source |
+| `AGENTS.md` | 5 XRPC commands, `com.etzhayyim.apps.gyotaku.*` | no handler source |
 | `README.md` (pre-2026-08-21) | Common Crawl ingest, snapshot storage | no ingest source |
 
 So there is no server to start, no snapshot to fetch, and no endpoint to call.
