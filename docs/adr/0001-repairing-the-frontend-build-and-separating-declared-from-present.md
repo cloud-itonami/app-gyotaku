@@ -39,7 +39,7 @@ verifiable at all.
 |---|---|
 | `README.md` | crawler ingest, Common Crawl CDX/Range, kotodama WIT Arrow `gyotaku_snapshots`, MCP tools + REST, `/xrpc` |
 | `PROJECT.jsonld` | `"stack": "go"`, gRPC routes at `/api/grpc` |
-| `CLAUDE.md` | AT Protocol appview, `did:web:gyotaku.etzhayyim.com`, five `com.etzhayyim.apps.gyotaku.*` XRPC commands |
+| `AGENTS.md` | AT Protocol appview, `did:web:gyotaku.etzhayyim.com`, five `com.etzhayyim.apps.gyotaku.*` XRPC commands |
 | `appview/*/kotodama.jsonld` | two components, both pointing at a `component.wasm` |
 
 Measured against the tracked tree: **0 `.wasm` files, 0 `.go` files**, no
@@ -71,7 +71,7 @@ exactly the ambiguity this ADR removes.
 - The descriptors are now labelled as intent rather than implementation, so the
   next contributor knows what is missing without reverse-engineering the tree.
 - The `component.wasm` referenced by both `kotodama.jsonld` files, the Go stack
-  in `PROJECT.jsonld`, and the XRPC surface in `CLAUDE.md` remain open work,
+  in `PROJECT.jsonld`, and the XRPC surface in `AGENTS.md` remain open work,
   named in the README as such.
 - Tailwind is configured but no CSS entrypoint is imported, so it does not reach
   the bundle. Left in place and documented rather than silently removed — the

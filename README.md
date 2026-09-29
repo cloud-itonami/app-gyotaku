@@ -20,7 +20,7 @@ it builds the frontend from a clean clone in five commands, all verified.
 | `appview/*/kotodama.jsonld` | two component descriptors (`gyotaku`, `gyotaku-mcp-component`) | parse; both point at a `component.wasm` that is not tracked |
 | `PROJECT.jsonld` | project/route descriptor | parses; declares a Go gRPC component |
 | `README.edn`, `migration.edn` | repository + migration metadata | parse |
-| `CLAUDE.md` | intended XRPC command surface | design note only |
+| `AGENTS.md` | intended XRPC command surface | design note only |
 
 This repository was migrated from `etzhayyim/root`
 (`60-apps/etzhayyim-project-gyotaku`, 16 files / 10,958 bytes) plus the two
@@ -36,7 +36,7 @@ code in this tree:
   `kotodama.jsonld` files. No `.wasm` is tracked (0 files).
 - **Go gRPC service** — `PROJECT.jsonld` declares `"stack": "go"` with routes at
   `/api/grpc`. No `.go` is tracked (0 files).
-- **XRPC command surface** — `CLAUDE.md` specifies five commands
+- **XRPC command surface** — `AGENTS.md` specifies five commands
   (`searchSnapshots`, `listDomains`, `getSnapshot`, `getTimeline`, `getStats`)
   under `com.etzhayyim.apps.gyotaku.*`. No handler source exists.
 - **Ingest** — Common Crawl CDX/Range retrieval and crawler hand-off, with
